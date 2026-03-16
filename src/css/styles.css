@@ -1,0 +1,138 @@
+/* ==========================================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   - Mantido como está, já é bem enxuto.
+========================================================== */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background-color: #f4f6f8;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================
+   LAYOUT PRINCIPAL
+   - Consolidado para evitar repetição.
+========================================================== */
+.secao-superior,
+.secao-inferior {
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+}
+
+.secao-superior {
+  margin-bottom: 2px;
+  padding: 30px;
+}
+
+.secao-inferior {
+  margin-top: 2px;
+  padding: 0px 30px 30px 30px;
+}
+
+/* ==========================================================
+   ESTADOS DE INTERFACE E TÍTULOS
+   - Simplificados para melhor desempenho de renderização.
+========================================================== */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-style: italic;
+}
+
+.loading::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #66cc66;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-style: italic;
+}
+
+/* ==========================================================
+   CARDS E PÍLULAS (Consolidado e Refinado)
+   - Uso de variáveis para cores repetidas.
+========================================================== */
+:root {
+  --primary-color: #66cc66;
+  --primary-color-dark: #59b359;
+  --primary-shadow: rgba(102, 204, 102, 0.3);
+  --primary-shadow-hover: rgba(102, 204, 102, 0.4);
+  --pill-padding: 12px 24px;
+  --pill-font-size: 14px;
+}
+
+.table-filter-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Botão do Nível */
+.btn-nivel {
+  border: none;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #66CC66;
+  color: white;
+}
+
+.btn-nivel:hover {
+  background-color: #59B359;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   AJUSTES RESPONSIVOS
+   - Consolidados e refatorados com a nova classe base.
+========================================================== */
+@media (max-width: 768px) {
+  .filter-pills,
+  .tabs-header {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .pill-button {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-pills,
+  .tabs-header {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .pill-button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
