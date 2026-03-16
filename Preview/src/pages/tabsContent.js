@@ -35,16 +35,21 @@ function renderTable(linhas, colunas) {
             <thead>
                 <tr>
                 ${colunas.map(col => `
-                    <th>${col.label}</th>
+                    <th class="align-${col.align}">${col.label}</th>
                 `).join("")}
                 </tr>    
             </thead>
             <tbody>
                 ${linhas.map(row => `
-                    <tr>${colunas.map(col => `<td>${row[col.key]}</td>`)
+                    <tr>${colunas.map(col => `<td class="align-${col.align}">${renderCell(row, col)}</td>`)
                 .join("")}</tr>
                 `).join("")}  
             </tbody>
         </table>
     `
+}
+
+function renderCell(row, col) {
+    const val = col.fmt ? col.fmt(row[col.key]) : row[col.key]
+    return val ?? "";
 }

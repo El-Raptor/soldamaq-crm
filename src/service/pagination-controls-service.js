@@ -9,6 +9,8 @@ let totalItensPagina = null;
 export const tamanhoPagina = 50;
 let offset = (paginaAtual - 1) * tamanhoPagina;
 
+let listenersIniciados = false;
+
 let pagination = {
     paginaAtual,
     totalPaginas,
@@ -33,6 +35,7 @@ export function initPaginationControls(qtdRegistros) {
 
     renderPagination(pagination);
 
+    // Retiramos a trava e chamamos as funções toda vez que a paginação renderizar
     firstPageListener();
     previousPageListener();
     nextPageListener();
@@ -55,32 +58,28 @@ const irParaPagina = async (page) => {
 
 const firstPageListener = () => {
     const btnFirstPage = document.querySelector(".btn-first-page");
-
-    btnFirstPage.addEventListener("click", () => {
-        irParaPagina(1);
-    })
+    if (btnFirstPage) {
+        btnFirstPage.onclick = () => irParaPagina(1);
+    }
 }
 
 const previousPageListener = () => {
     const btnPreviousPage = document.querySelector(".btn-previous-page");
-
-    btnPreviousPage.addEventListener("click", () => {
-        irParaPagina(paginaAtual - 1)
-    })
+    if (btnPreviousPage) {
+        btnPreviousPage.onclick = () => irParaPagina(paginaAtual - 1);
+    }
 }
 
 const nextPageListener = () => {
     const btnNextPage = document.querySelector(".btn-next-page");
-
-    btnNextPage.addEventListener("click", () => {
-        irParaPagina(paginaAtual + 1);
-    })
+    if (btnNextPage) {
+        btnNextPage.onclick = () => irParaPagina(paginaAtual + 1);
+    }
 }
 
 const lastPageListener = () => {
     const btnLastPage = document.querySelector(".btn-last-page");
-
-    btnLastPage.addEventListener("click", () => {
-        irParaPagina(totalPaginas);
-    })
+    if (btnLastPage) {
+        btnLastPage.onclick = () => irParaPagina(totalPaginas);
+    }
 }

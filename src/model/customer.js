@@ -5,7 +5,6 @@ export async function getCountCustomers() {
   const query = `
     SELECT COUNT(*) AS QTD
     FROM VGFCRM_SKMS
-    WHERE TOTALVENDAS_60D > 0
   `
   const results = await JSK.consultar(query, null);
   
@@ -24,7 +23,6 @@ export async function carregarLoteInicial() {
       SELECT a.*, ROWNUM rnum FROM (
         SELECT *
         FROM VGFCRM_SKMS
-        WHERE TOTALVENDAS_60D > 0
         ORDER BY CODPARC
       ) a
       WHERE ROWNUM <= 1000
@@ -88,4 +86,13 @@ export async function getCustomers(offset, limit = 50, onWait) {
   }
 
   return clientesCache.slice(offset, offset + limit);
+}
+
+export function getAllCustomers() {
+  return clientesCache;
+}
+
+// Retorna o status do carregamento (true/false)
+export function isBackgroundLoading() {
+  return carregandoEmBackground;
 }

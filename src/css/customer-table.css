@@ -46,6 +46,21 @@ table {
   min-width: max-content; /* Adapta ao conteúdo */
 }
 
+table thead tr th.align-left,
+table tbody tr td.align-left {
+  text-align: left;
+}
+
+table thead tr th.align-center,
+table tbody tr td.align-center {
+  text-align: center;
+}
+
+table thead tr th.align-right,
+table tbody tr td.align-right {
+  text-align: right;
+}
+
 /* Estilo dos cabeçalhos */
 .tabela-principal th,
 .tabela-secundaria th {

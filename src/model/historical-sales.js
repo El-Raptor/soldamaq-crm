@@ -1,6 +1,6 @@
 import { JSK } from "https://cdn.jsdelivr.net/npm/@jtandrelevicius/utils-js-library@latest/index.js";
 
-export async function getHistoricalSales(codparc, offset) {
+export async function getHistoricalSales(codparc) {
     const query = `
         WITH
         PARCEIRO AS (
@@ -72,7 +72,7 @@ export async function getHistoricalSales(codparc, offset) {
         { value: codparc, type: "I" }
     ];
 
-    const results = JSK.consultarPaginado(query, params, 50, offset);
+    const results = JSK.consultar(query, params);
     
     if (!results) {
         throw new Error("Erro ao realizar operação no banco de dados")

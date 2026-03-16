@@ -1,18 +1,19 @@
 import { renderTabsContainer } from "../components/tabs-container.js";
 import { renderTabContent } from "../pages/tabsContent.js";
+import { fmtBRL, fmtDate } from "../util/data-format-utils.js";
 
 
 const historico = [
-    { key: "DESCRGRUPO", label: "Grupo", align: "left" },
+    { key: "DESCRGRUPOPROD", label: "Grupo", align: "left" },
     { key: "DESCRPROD", label: "Produto", align: "left" },
     { key: "CODPROD", label: "Código", align: "left" },
     { key: "MARCA", label: "Marca", align: "left" },
-    { key: "ULTPRECO", label: "Últ. Preço", align: "right" },
-    { key: "ULTQTD", label: "Últ. Qtd.", align: "right" },
-    { key: "ULTVENDA", label: "Últ. Venda", align: "right" },
-    { key: "ULTVENDEDOR", label: "Últ. Vendedor", align: "right" },
-    { key: "RAZAOSOCIAL", label: "Empresa", align: "left" },
-    { key: "ULTPED", label: "Últ. Pedido", align: "right" },
+    { key: "ULTVLR", label: "Últ. Preço", fmt: fmtBRL, align: "right" },
+    { key: "ULTQTD", label: "Últ. Qtd.", fmt: fmtBRL, align: "right" },
+    { key: "ULTVEND", label: "Últ. Venda", fmt: fmtDate, align: "center" },
+    { key: "ULTVENDEDOR", label: "Últ. Vendedor", align: "center" },
+    { key: "RAZAOSOCIAL", label: "Empresa", fmt: fmtBRL, align: "left" },
+    { key: "ULTPED", label: "Últ. Pedido", fmt: fmtDate, align: "center" },
 ];
 const credito = [
     { key: "NUFIN", label: "Nº Financeiro", align: "center" },

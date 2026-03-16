@@ -18,7 +18,7 @@ function renderTable(dados, cols) {
                 ${cols
                   .map(
                     (col) => `
-                    <th class="${col.align}">${col.label}</th>
+                    <th class="align-${col.align}">${col.label}</th>
                 `,
                   )
                   .join("")}
@@ -28,7 +28,7 @@ function renderTable(dados, cols) {
                   .map(
                     (row) => `
                     <tr data-codparc=${row.CODPARC}>
-                        ${cols.map((col) => `<td>${row[col.key]}</td>`).join("")}
+                        ${cols.map((col) => `<td class="align-${col.align}">${renderCell(col, row)}</td>`).join("")}
                     </tr>
                 `,
                   )
@@ -39,4 +39,9 @@ function renderTable(dados, cols) {
       <div class="pagination-container">
       </div>
     `;
+}
+
+const renderCell = (col, row) => {
+  const val = col.fmt ? col.fmt(row[col.key]) : row[col.key];
+  return val ?? "";
 }

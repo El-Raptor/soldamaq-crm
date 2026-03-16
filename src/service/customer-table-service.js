@@ -1,8 +1,10 @@
 import { renderTableContainer } from "../components/customer-table.js";
 import { setActiveCodparc } from "../main.js";
-import { getCountCustomers, getCustomers, carregarLoteInicial, iniciarBuscaBackground } from "../model/customer.js";
+import { getCountCustomers, getCustomers, carregarLoteInicial, iniciarBuscaBackground, getAllCustomers, isBackgroundLoading } from "../model/customer.js";
 import { initButtonsListener } from "./action-buttons-service.js";
 import { getOffset, initPaginationControls, tamanhoPagina } from "./pagination-controls-service.js";
+import { exportToExcel } from "../util/export.js";
+import { fmtBRL, fmtDate } from "../util/data-format-utils.js";
 
 let cols = [];
 let days = "60";
@@ -12,22 +14,21 @@ let toastElement = null;
 
 export async function initTable() {
   totalRegistros = await getCountCustomers();
-  
+
   showToast(`Iniciando carregamento de ${totalRegistros} clientes...`);
 
-  // 1. Carrega os 1000 primeiros para liberar a tela
   await carregarLoteInicial();
 
-  // 2. Inicia o processo silencioso dos outros 21 mil registros
   iniciarBuscaBackground(
     totalRegistros,
     (atual, total) => updateToast(`Carregando em segundo plano: ${atual} de ${total} clientes...`),
     () => updateToast("Todos os registros foram carregados com sucesso!", true)
   );
 
-  // 3. Monta a tabela com a primeira página (50 itens)
   const offset = getOffset();
   loadedData = await getCustomers(offset, tamanhoPagina);
+
+  initButtonsListener();
 
   loadTable(days, totalRegistros);
 }
@@ -36,20 +37,21 @@ export function loadTable(newDay, totalRegistros) {
   days = newDay;
   initCols();
   renderTableContainer(loadedData, cols);
+
   initPaginationControls(totalRegistros);
+
   selectCustomerListener();
-  initButtonsListener()
 }
 
 export async function updateTable() {
   const offset = getOffset();
-  
-  // Se a página clicada ainda não carregou no background, ele avisa pelo toast
+
   const dados = await getCustomers(offset, tamanhoPagina, () => {
     updateToast("Aguarde, finalizando o download desta página...");
   });
-  
+
   loadedData = dados;
+
   loadTable(days, totalRegistros);
 }
 
@@ -73,29 +75,30 @@ async function selectCustomer(codparc) {
   await setActiveCodparc(codparc);
 }
 
+export function handleExport() {
+  const allData = getAllCustomers();
+  
+  if (isBackgroundLoading()) {
+    const confirmar = confirm(`Atenção: O sistema ainda está baixando os clientes em segundo plano. Até agora foram carregados ${allData.length} registros.\n\nDeseja exportar apenas os dados já carregados?`);
+    if (!confirmar) {
+      return; 
+    }
+  }
+
+  exportToExcel(allData, cols, 'Exportacao_Clientes_Completa');
+}
+
 function initCols() {
   cols = [
     { key: "NOMEPARC", label: "Nome", align: "left" },
     { key: "CODPARC", label: "Código", align: "center" },
-    {
-      key: `MAIORORC_${days}D`,
-      label: `Maior Orçamento ${days} Dias`,
-      align: "right",
-    },
-    {
-      key: `TOTALVENDAS_${days}D`,
-      label: `Total de Vendas ${days} Dias`,
-      align: "right",
-    },
-    {
-      key: `MAIORORC_${days}D`,
-      label: `Maior Orçamento ${days} Dias`,
-      align: "right",
-    },
-    { key: "ORCACUM", label: "Orçamento Acumulado", align: "right" },
-    { key: "VLRORCPEN", label: "Orçamento Pendente", align: "right" },
-    { key: "ULTVENDA", label: "Última Venda", align: "right" },
-    { key: "ULTORC", label: "Último Orçamento", align: "right" },
+    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `TOTALVENDAS_${days}D`, label: `Total de Vendas ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `ORCACUM_${days}D`, label: "Orçamento Acumulado", fmt: fmtBRL, align: "right" },
+    { key: "VLRORCPEN", label: "Orçamento Pendente", fmt: fmtBRL, align: "right" },
+    { key: "ULT_VENDA", label: "Última Venda", fmt: fmtDate, align: "center" },
+    { key: "ULT_ORC", label: "Último Orçamento", fmt: fmtDate, align: "center" },
     { key: "TELEFONE", label: "Telefone", align: "left" },
     { key: "EMAIL", label: "E-mail", align: "left" },
     { key: "ULTVENDEDOR", label: "Último Vendedor", align: "left" },
