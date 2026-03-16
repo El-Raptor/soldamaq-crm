@@ -1,70 +1,84 @@
-export async function getHistoricalSales(codparc) {
+import { JSK } from "https://cdn.jsdelivr.net/npm/@jtandrelevicius/utils-js-library@latest/index.js";
+
+export async function getHistoricalSales(codparc, offset) {
+    const query = `
+        WITH
+        PARCEIRO AS (
+            SELECT CODPARC
+            FROM TGFPAR
+            WHERE CODPARC = ?
+        ),
+        TOPS AS (
+            SELECT CODTIPOPER, NUPAR
+            FROM AD_CENTRALPARAMTOP
+            WHERE NUPAR IN (2,4)
+        ),
+        ULTNOTAS AS (
+            SELECT *
+            FROM (
+                SELECT
+                    ITE.CODPROD
+                    , CAB.DTNEG
+                    , CAB.TIPMOV
+                    , ITE.VLRUNIT
+                    , ITE.QTDNEG
+                    , CAB.CODVEND
+                    , CAB.CODEMP
+                    , ROW_NUMBER() OVER(PARTITION BY CODPROD, TIPMOV ORDER BY DTNEG) AS RN
+                FROM
+                    TGFCAB CAB
+                    JOIN TGFITE ITE ON CAB.NUNOTA = ITE.NUNOTA
+                    JOIN PARCEIRO PAR ON CAB.CODPARC = PAR.CODPARC
+                    JOIN TOPS TPO ON CAB.CODTIPOPER = TPO.CODTIPOPER
+                WHERE
+                    CAB.STATUSNOTA = 'L'
+            )
+            WHERE RN = 1 -- Restringe a apenas as últimas datas
+        )
+        SELECT
+            GRU.DESCRGRUPOPROD
+            , PRO.DESCRPROD
+            , PRO.CODPROD
+            , PRO.MARCA
+            , MAX(CASE WHEN ULT.TIPMOV = 'V' THEN ULT.VLRUNIT END) AS ULTVLR
+            , MAX(CASE WHEN ULT.TIPMOV = 'V' THEN ULT.QTDNEG END) AS ULTQTD
+            , MAX(CASE WHEN ULT.TIPMOV = 'V' THEN ULT.DTNEG END) AS ULTVEND
+            , MAX(CASE WHEN ULT.TIPMOV = 'V' THEN VEN.APELIDO END) AS ULTVENDEDOR
+            , MAX(CASE WHEN ULT.TIPMOV = 'V' THEN EMP.RAZAOSOCIAL END) AS ULTEMP
+            , MAX(CASE WHEN CAB.TIPMOV = 'V' THEN ITE.QTDNEG ELSE 0 END) AS QTDVEN
+            , MAX(CASE WHEN ULT.TIPMOV = 'P' THEN ULT.DTNEG END) AS ULTPED
+            , COUNT(DISTINCT PRO.CODPROD) OVER() AS TOTAL_COUNT
+        FROM
+            TGFPRO PRO
+            JOIN TGFITE ITE ON PRO.CODPROD = ITE.CODPROD
+            JOIN TGFCAB CAB ON ITE.NUNOTA = CAB.NUNOTA
+            JOIN TGFGRU GRU ON PRO.CODGRUPOPROD = GRU.CODGRUPOPROD
+            JOIN PARCEIRO PAR ON CAB.CODPARC = PAR.CODPARC
+            LEFT JOIN ULTNOTAS ULT ON PRO.CODPROD = ULT.CODPROD
+            LEFT JOIN TSIEMP EMP ON ULT.CODEMP = EMP.CODEMP
+            LEFT JOIN TGFVEN VEN ON ULT.CODVEND = VEN.CODVEND
+        WHERE 
+            CAB.STATUSNOTA = 'L'
+        GROUP BY
+            GRU.DESCRGRUPOPROD
+            , PRO.DESCRPROD
+            , PRO.CODPROD
+            , PRO.MARCA
+        ORDER BY
+            PRO.CODPROD
+    `;
+
+    const params = [
+        { value: codparc, type: "I" }
+    ];
+
+    const results = JSK.consultarPaginado(query, params, 50, offset);
     
-    return [
-    {
-        "DESCRGRUPO": "MOTOSERRA/ROCADEIRA/CORTADOR GRAMA",
-        "DESCRPROD": "ROCAD 2,0HP 52,0CC RT52L TOYAMA @",
-        "CODPROD": "31002",
-        "MARCA": "TOYAMA",
-        "ULTPRECO": "R$ 900,00",
-        "ULTQTD": "1",
-        "ULTVENDA": "16/02/2026",
-        "ULTVENDEDOR": "JEFERSON LIMA",
-        "RAZAOSOCIAL": "SOLDAMAQ COMERCIO DE FERRAMENTAS LTDA",
-        "QTDNEGTOT": "2",
-        "ULTPED": "16/02/2026"
-    },
-    {
-        "DESCRGRUPO": "OLEO",
-        "DESCRPROD": "OLEO 2T STIHL 8017H 500ML 1:50CASTR(20",
-        "CODPROD": "28940",
-        "MARCA": "STIHL",
-        "ULTPRECO": "R$ 85,00",
-        "ULTQTD": "1",
-        "ULTVENDA": "16/02/2026",
-        "ULTVENDEDOR": "JEFERSON LIMA",
-        "RAZAOSOCIAL": "SOLDAMAQ COMERCIO DE FERRAMENTAS LTDA",
-        "QTDNEGTOT": "2",
-        "ULTPED": "16/02/2026"
-    },
-    {
-        "DESCRGRUPO": "MEDIDOR/DETETOR/NIVEL",
-        "DESCRPROD": "MULTIMETRO DIGITAL - ET-1000 MINIPA",
-        "CODPROD": "19011",
-        "MARCA": "MINIPA",
-        "ULTPRECO": "R$ 80,00",
-        "ULTQTD": "1",
-        "ULTVENDA": "10/06/2021",
-        "ULTVENDEDOR": "ELIEZER.LORENA",
-        "RAZAOSOCIAL": "SOLDAMAQ COMERCIO DE FERRAMENTAS LTDA",
-        "QTDNEGTOT": "2",
-        "ULTPED": "10/06/2021"
-    },
-    {
-        "DESCRGRUPO": "TORNEIRA JARDIM",
-        "DESCRPROD": "TORNEIRA JARD/TANQ ESFERA 1/2\"X3/4\"KRON6",
-        "CODPROD": "17618",
-        "MARCA": "KRONA",
-        "ULTPRECO": "R$ 7,99",
-        "ULTQTD": "2",
-        "ULTVENDA": "29/03/2019",
-        "ULTVENDEDOR": "ODNEI MARION",
-        "RAZAOSOCIAL": "SOLDAMAQ COMERCIO DE FERRAMENTAS LTDA",
-        "QTDNEGTOT": "12",
-        "ULTPED": "29/03/2019"
-    },
-    {
-        "DESCRGRUPO": "FRIA REGISTRO ESFERA",
-        "DESCRPROD": "REGISTRO ESF VS ROSCAVEL 1\" KRONA 2",
-        "CODPROD": "14784",
-        "MARCA": "KRONA",
-        "ULTPRECO": "R$ 14,67",
-        "ULTQTD": "1",
-        "ULTVENDA": "29/03/2019",
-        "ULTVENDEDOR": "ODNEI MARION",
-        "RAZAOSOCIAL": "SOLDAMAQ COMERCIO DE FERRAMENTAS LTDA",
-        "QTDNEGTOT": "6",
-        "ULTPED": "29/03/2019"
+    if (!results) {
+        throw new Error("Erro ao realizar operação no banco de dados")
+    } else if (results.status == 0) {
+        throw new Error("Erro ao realizar consulta do histórico.", results.statusMessage)
     }
-    ]
+
+    return results;
 }
