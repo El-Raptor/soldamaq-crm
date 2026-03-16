@@ -1,0 +1,12 @@
+export async function getContacts(codparc) {
+    return [
+      {
+        "NOME": "GRUPO SÃO GABRIEL",
+        "TIPO": null,
+        "TELEFONE": "67 32944292",
+        "CELULAR": "67 32953599",
+        "EMAIL": "grupo@terra.com.br",
+        "ULTCHAMADA": "-"
+      }
+  ]
+}

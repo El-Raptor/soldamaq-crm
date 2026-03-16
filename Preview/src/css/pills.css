@@ -1,0 +1,57 @@
+/* CLASSE BASE PARA PÍLULAS */
+.pill-button,
+.time-pill-button {
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  padding: var(--pill-padding);
+  color: #666;
+  text-decoration: none;
+  font-size: var(--pill-font-size);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.pill-button:hover,
+.time-pill-button:hover {
+  border-color: var(--primary-color);
+  color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 204, 102, 0.2);
+}
+
+.pill-button.active,
+.time-pill-button.active {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-color-dark)
+  );
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px var(--primary-shadow);
+  transform: translateY(-1px);
+}
+
+.pill-button.active:hover,
+.time-pill-button.active:hover {
+  background: linear-gradient(135deg, var(--primary-color-dark), #4caf50);
+}
+
+/* SISTEMA DE FILTROS - Agora usa a classe base */
+.filter-container {
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+}
