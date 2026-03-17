@@ -1,4 +1,3 @@
-import { renderTableContainer, initSortListeners } from "../components/customer-table.js";
 import { setActiveCodparc } from "../main.js";
 import {
   getCountCustomers,
@@ -14,9 +13,12 @@ import {
   initPaginationControls,
   tamanhoPagina,
 } from "./pagination-controls-service.js";
+import { renderTableContainer, initSortListeners, initFilterListeners } from "../components/customer-table.js";
+import { openFilterModal } from "../components/column-filter-modal.js";
 import { exportToExcel } from "../util/export.js";
 import { fmtBRL, fmtDate } from "../util/data-format-utils.js";
 import { sortData } from "../util/sort-utils.js";
+import { getUniqueValues, applyFilters } from "../util/filter-utils.js";
 
 let cols = [];
 let days = "60";
@@ -26,6 +28,7 @@ let totalRegistros = null;
 let toastElement = null;
 
 let sortState = { col: null, dir: null };
+let filterState = {};
 
 export async function initTable() {
   totalRegistros = await getCountCustomers();
@@ -55,12 +58,12 @@ export async function initTable() {
 export function loadTable(newDay, totalRegistros) {
   days = newDay;
   initCols();
-  renderTableContainer(loadedData, cols, sortState);
+  renderTableContainer(loadedData, cols, sortState, filterState);
   initPaginationControls(totalRegistros);
-
-  // Inicia os listeners da tabela (clique nas linhas e clique nos cabeçalhos)
+  
   selectCustomerListener();
   initSortListeners(handleSort);
+  initFilterListeners(handleFilterClick);
 }
 
 export async function updateTable() {
@@ -78,33 +81,33 @@ export async function updateTable() {
   loadTable(days, totalRegistros);
 }
 
-function handleSort(key) {
-  // Define o ciclo: asc -> desc -> null
-  if (sortState.col === key) {
-    if (sortState.dir === "asc") {
-      sortState.dir = "desc";
-    } else if (sortState.dir === "desc") {
-      sortState.dir = null;
-      sortState.col = null;
-    }
-  } else {
-    sortState.col = key;
-    sortState.dir = "asc";
-  }
+function applyViewTransformations() {
+  let dataToRender = [...originalPageData];
 
-  // Se for null (terceiro clique), volta ao original. Senão, ordena.
-  if (!sortState.dir) {
-    loadedData = [...originalPageData];
-  } else {
-    loadedData = sortData(originalPageData, sortState.col, sortState.dir);
-  }
+  // 1. Aplica Filtros
+  dataToRender = applyFilters(dataToRender, cols, filterState);
 
-  // Recarrega a UI sem fazer requisição pro banco de dados
-  renderTableContainer(loadedData, cols, sortState);
+  // 2. Aplica Ordenação
+  dataToRender = sortData(dataToRender, sortState.col, sortState.dir);
 
-  // Precisamos re-anexar os listeners do DOM porque a tabela foi reconstruída
+  // 3. Atualiza UI
+  loadedData = dataToRender;
+  renderTableContainer(loadedData, cols, sortState, filterState);
+  
   selectCustomerListener();
   initSortListeners(handleSort);
+  initFilterListeners(handleFilterClick);
+}
+
+function handleSort(key) {
+  if (sortState.col === key) {
+    if (sortState.dir === 'asc') sortState.dir = 'desc';
+    else if (sortState.dir === 'desc') { sortState.dir = null; sortState.col = null; }
+  } else {
+    sortState.col = key;
+    sortState.dir = 'asc';
+  }
+  applyViewTransformations();
 }
 
 function selectCustomerListener() {
@@ -125,6 +128,23 @@ function selectCustomerListener() {
 
 async function selectCustomer(codparc) {
   await setActiveCodparc(codparc);
+}
+
+function handleFilterClick(key, anchorElement) {
+  const column = cols.find(c => c.key === key);
+  
+  // Extrai valores únicos dos dados originais da página, não dos dados já filtrados
+  const uniqueValues = getUniqueValues(originalPageData, column);
+  const activeValues = filterState[key]; // Pega o que já está filtrado, se houver
+
+  openFilterModal(column, uniqueValues, activeValues, anchorElement, (colKey, selectedValues) => {
+    if (selectedValues === null) {
+      delete filterState[colKey]; // Remove filtro se tudo foi selecionado
+    } else {
+      filterState[colKey] = selectedValues;
+    }
+    applyViewTransformations();
+  });
 }
 
 export function handleExport() {

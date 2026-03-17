@@ -255,3 +255,156 @@ tbody tr:hover {
   box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4);
   transform: translateY(-1px);
 }
+
+.th-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 11px;
+}
+.filter-indicator:hover { opacity: 1; }
+.filter-indicator.text-primary { opacity: 1; color: #0d6efd; } 
+
+.filter-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 999; 
+}
+
+.filter-modal-container {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+
+.filter-modal-header {
+  padding: 10px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+  border-radius: 6px 6px 0 0;
+}
+
+.filter-modal-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-search-input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.filter-select-all-label {
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  cursor: pointer;
+}
+
+.filter-items-list {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-item-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  min-height: 24px;
+}
+
+.filter-modal-footer {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.filter-modal-footer button {
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.btn-cancel-filter { background: #eee; color: #333; }
+.btn-apply-filter { background: #66cc66; color: white; }
+.btn-apply-filter:hover { background: #59b359; }
+
+table thead tr th {
+  position: relative; 
+}
+
+.filter-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0; 
+  background-color: #4da64d; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease;
+  z-index: 2; 
+  box-shadow: 2px 0px 5px rgba(0,0,0,0.15); 
+  cursor: pointer;
+}
+
+.filter-drawer i {
+  color: white;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+th:hover .filter-drawer {
+  width: 40px;
+}
+
+th.is-filtered .filter-drawer {
+  width: 40px;
+  background-color: #0d6efd;
+}
+
+th:hover .filter-drawer i,
+th.is-filtered .filter-drawer i {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+
+.th-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
