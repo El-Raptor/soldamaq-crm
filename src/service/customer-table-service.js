@@ -1,46 +1,66 @@
-import { renderTableContainer } from "../components/customer-table.js";
+import { renderTableContainer, initSortListeners } from "../components/customer-table.js";
 import { setActiveCodparc } from "../main.js";
-import { getCountCustomers, getCustomers, carregarLoteInicial, iniciarBuscaBackground, getAllCustomers, isBackgroundLoading } from "../model/customer.js";
+import {
+  getCountCustomers,
+  getCustomers,
+  carregarLoteInicial,
+  iniciarBuscaBackground,
+  getAllCustomers,
+  isBackgroundLoading,
+} from "../model/customer.js";
 import { initButtonsListener } from "./action-buttons-service.js";
-import { getOffset, initPaginationControls, tamanhoPagina } from "./pagination-controls-service.js";
+import {
+  getOffset,
+  initPaginationControls,
+  tamanhoPagina,
+} from "./pagination-controls-service.js";
 import { exportToExcel } from "../util/export.js";
 import { fmtBRL, fmtDate } from "../util/data-format-utils.js";
+import { sortData } from "../util/sort-utils.js";
 
 let cols = [];
 let days = "60";
 let loadedData = null;
-let totalRegistros = null
+let originalPageData = null;
+let totalRegistros = null;
 let toastElement = null;
+
+let sortState = { col: null, dir: null };
 
 export async function initTable() {
   totalRegistros = await getCountCustomers();
-
   showToast(`Iniciando carregamento de ${totalRegistros} clientes...`);
-
   await carregarLoteInicial();
 
   iniciarBuscaBackground(
     totalRegistros,
-    (atual, total) => updateToast(`Carregando em segundo plano: ${atual} de ${total} clientes...`),
-    () => updateToast("Todos os registros foram carregados com sucesso!", true)
+    (atual, total) =>
+      updateToast(
+        `Carregando em segundo plano: ${atual} de ${total} clientes...`,
+      ),
+    () => updateToast("Todos os registros foram carregados com sucesso!", true),
   );
 
   const offset = getOffset();
   loadedData = await getCustomers(offset, tamanhoPagina);
 
-  initButtonsListener();
+  // Salva uma cópia exata dos dados originais para restaurar depois
+  originalPageData = [...loadedData];
+  sortState = { col: null, dir: null }; // Reseta a ordenação ao carregar nova página
 
+  initButtonsListener();
   loadTable(days, totalRegistros);
 }
 
 export function loadTable(newDay, totalRegistros) {
   days = newDay;
   initCols();
-  renderTableContainer(loadedData, cols);
-
+  renderTableContainer(loadedData, cols, sortState);
   initPaginationControls(totalRegistros);
 
+  // Inicia os listeners da tabela (clique nas linhas e clique nos cabeçalhos)
   selectCustomerListener();
+  initSortListeners(handleSort);
 }
 
 export async function updateTable() {
@@ -51,8 +71,40 @@ export async function updateTable() {
   });
 
   loadedData = dados;
+  // Atualiza os dados originais quando mudar de página
+  originalPageData = [...dados];
+  sortState = { col: null, dir: null };
 
   loadTable(days, totalRegistros);
+}
+
+function handleSort(key) {
+  // Define o ciclo: asc -> desc -> null
+  if (sortState.col === key) {
+    if (sortState.dir === "asc") {
+      sortState.dir = "desc";
+    } else if (sortState.dir === "desc") {
+      sortState.dir = null;
+      sortState.col = null;
+    }
+  } else {
+    sortState.col = key;
+    sortState.dir = "asc";
+  }
+
+  // Se for null (terceiro clique), volta ao original. Senão, ordena.
+  if (!sortState.dir) {
+    loadedData = [...originalPageData];
+  } else {
+    loadedData = sortData(originalPageData, sortState.col, sortState.dir);
+  }
+
+  // Recarrega a UI sem fazer requisição pro banco de dados
+  renderTableContainer(loadedData, cols, sortState);
+
+  // Precisamos re-anexar os listeners do DOM porque a tabela foi reconstruída
+  selectCustomerListener();
+  initSortListeners(handleSort);
 }
 
 function selectCustomerListener() {
@@ -77,28 +129,60 @@ async function selectCustomer(codparc) {
 
 export function handleExport() {
   const allData = getAllCustomers();
-  
+
   if (isBackgroundLoading()) {
-    const confirmar = confirm(`Atenção: O sistema ainda está baixando os clientes em segundo plano. Até agora foram carregados ${allData.length} registros.\n\nDeseja exportar apenas os dados já carregados?`);
+    const confirmar = confirm(
+      `Atenção: O sistema ainda está baixando os clientes em segundo plano. Até agora foram carregados ${allData.length} registros.\n\nDeseja exportar apenas os dados já carregados?`,
+    );
     if (!confirmar) {
-      return; 
+      return;
     }
   }
 
-  exportToExcel(allData, cols, 'Exportacao_Clientes_Completa');
+  exportToExcel(allData, cols, "Exportacao_Clientes_Completa");
 }
 
 function initCols() {
   cols = [
     { key: "NOMEPARC", label: "Nome", align: "left" },
     { key: "CODPARC", label: "Código", align: "center" },
-    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
-    { key: `TOTALVENDAS_${days}D`, label: `Total de Vendas ${days} Dias`, fmt: fmtBRL, align: "right", },
-    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
-    { key: `ORCACUM_${days}D`, label: "Orçamento Acumulado", fmt: fmtBRL, align: "right" },
-    { key: "VLRORCPEN", label: "Orçamento Pendente", fmt: fmtBRL, align: "right" },
+    {
+      key: `MAIORORC_${days}D`,
+      label: `Maior Orçamento ${days} Dias`,
+      fmt: fmtBRL,
+      align: "right",
+    },
+    {
+      key: `TOTALVENDAS_${days}D`,
+      label: `Total de Vendas ${days} Dias`,
+      fmt: fmtBRL,
+      align: "right",
+    },
+    {
+      key: `MAIORORC_${days}D`,
+      label: `Maior Orçamento ${days} Dias`,
+      fmt: fmtBRL,
+      align: "right",
+    },
+    {
+      key: `ORCACUM_${days}D`,
+      label: "Orçamento Acumulado",
+      fmt: fmtBRL,
+      align: "right",
+    },
+    {
+      key: "VLRORCPEN",
+      label: "Orçamento Pendente",
+      fmt: fmtBRL,
+      align: "right",
+    },
     { key: "ULT_VENDA", label: "Última Venda", fmt: fmtDate, align: "center" },
-    { key: "ULT_ORC", label: "Último Orçamento", fmt: fmtDate, align: "center" },
+    {
+      key: "ULT_ORC",
+      label: "Último Orçamento",
+      fmt: fmtDate,
+      align: "center",
+    },
     { key: "TELEFONE", label: "Telefone", align: "left" },
     { key: "EMAIL", label: "E-mail", align: "left" },
     { key: "ULTVENDEDOR", label: "Último Vendedor", align: "left" },

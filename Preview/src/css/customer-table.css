@@ -119,6 +119,13 @@ th.sortable:hover .sort-indicator {
     opacity: 0.7;
 }
 
+.th-label {
+  display: inline-flex;
+  user-select: none;
+  align-items: center;
+  gap: 4px;
+}
+
 /* Células gerais */
 th,
 td {
