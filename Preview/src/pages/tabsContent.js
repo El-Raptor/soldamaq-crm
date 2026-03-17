@@ -31,7 +31,7 @@ function renderPane(dados, colunas, tabId) {
 
 function renderTable(linhas, colunas) {
     return `
-        <table class="tabelas-secundaria">
+        <table class="tabela-secundaria">
             <thead>
                 <tr>
                 ${colunas.map(col => `

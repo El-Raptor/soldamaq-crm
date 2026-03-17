@@ -65,15 +65,6 @@ body {
   }
 }
 
-.empty-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #999;
-  font-style: italic;
-}
-
 /* ==========================================================
    CARDS E PÍLULAS (Consolidado e Refinado)
    - Uso de variáveis para cores repetidas.

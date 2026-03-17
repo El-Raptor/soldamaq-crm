@@ -1,9 +1,41 @@
+let clientesCache = []
+let carregandoEmBackground = false
+
 export async function getCountCustomers() {
   return 50;
 }
 
-export async function getCustomers() {
-  return [
+export async function iniciarBuscaBackground(totalRegistros, onProgress, onComplete) {
+  carregandoEmBackground = true;
+
+  if (onProgress) onProgress(clientesCache.length, totalRegistros)
+
+  await wait(2000);
+
+  carregandoEmBackground = false;
+  if (onComplete) onComplete();
+}
+
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+export async function getCustomers(offset, limit = 50, onWait) {
+  if(offset + limit > clientesCache.length && carregandoEmBackground) {
+    if (onWait) onWait();
+  }
+
+  return clientesCache.slice(offset, offset + limit)
+}
+
+export function getAllCustomers() {
+  return clientesCache;
+}
+
+export function isBackgroundLoading() {
+  return carregandoEmBackground;
+}
+
+export async function carregarLoteInicial() {
+  const dados = [
     {
       NOMEPARC: "CONSUMIDOR FINAL",
       CODPARC: 1,
@@ -1107,4 +1139,6 @@ export async function getCustomers() {
       ULTVENDEDOR: "MAICKON.FLORENC",
     },
   ];
+  clientesCache = dados;
+  return dados;
 }

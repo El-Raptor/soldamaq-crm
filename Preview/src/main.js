@@ -11,18 +11,22 @@ let activeCodparc = null;
 document.addEventListener("DOMContentLoaded", async () => {
   initFilters();
   await initTable();
-
+  initTabsListener(activeCodparc, null)
 });
 
 
 export async function setActiveCodparc(codparc) {
   activeCodparc = codparc;
   
-  const historico = await getHistoricalSales(activeCodparc);
-  const credito = await getCreditAnalysis(activeCodparc);
-  const contatos = await getContacts(activeCodparc);
-  const produtos = await getProducts(activeCodparc);
-  const dados = { historico, credito, contatos, produtos };
-  
-  initTabsListener(activeCodparc, dados);
+  if (codparc != 1) {
+    const historico = await getHistoricalSales(activeCodparc);
+    const credito = await getCreditAnalysis(activeCodparc);
+    const contatos = await getContacts(activeCodparc);
+    const produtos = await getProducts(activeCodparc);
+    const dados = { historico, credito, contatos, produtos };
+    initTabsListener(activeCodparc, dados);
+  }
+  else {
+    initTabsListener(activeCodparc, null)
+  }
 }
