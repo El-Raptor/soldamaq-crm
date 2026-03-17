@@ -5,12 +5,18 @@ import { getHistoricalSales } from "./model/historical-sales.js";
 import { getCreditAnalysis } from "./model/credit-analysis.js";
 import { getContacts } from "./model/contacts.js";
 import { getProducts } from "./model/products.js";
+import { initOpenLevelBtn } from "./service/open-level-button.js";
+import { ajustarLayout } from "./util/ajustar-layout.js";
 
 let activeCodparc = null;
+
+
+ajustarLayout();
 
 document.addEventListener("DOMContentLoaded", async () => {
   initFilters();
   await initTable();
+  initOpenLevelBtn(activeCodparc)
   initTabsListener(activeCodparc, null)
 });
 
@@ -25,8 +31,10 @@ export async function setActiveCodparc(codparc) {
     const produtos = await getProducts(activeCodparc);
     const dados = { historico, credito, contatos, produtos };
     initTabsListener(activeCodparc, dados);
+    initOpenLevelBtn(activeCodparc)
   }
   else {
     initTabsListener(activeCodparc, null)
+    initOpenLevelBtn(activeCodparc)
   }
 }
