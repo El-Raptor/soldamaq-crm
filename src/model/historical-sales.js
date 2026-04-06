@@ -1,6 +1,12 @@
 import { JSK } from "https://cdn.jsdelivr.net/npm/@jtandrelevicius/utils-js-library@latest/index.js";
+import { isDev } from "../util/env.js";
+import { fetchMock } from "../util/mock-fetcher.js";
 
 export async function getHistoricalSales(codparc) {
+    if (isDev) {
+        return await fetchMock("historical_sales.json")
+    }
+
     const query = `
         WITH
         PARCEIRO AS (

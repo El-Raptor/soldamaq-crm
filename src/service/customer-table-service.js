@@ -1,18 +1,7 @@
 import { setActiveCodparc } from "../main.js";
-import {
-  getCountCustomers,
-  getCustomers,
-  carregarLoteInicial,
-  iniciarBuscaBackground,
-  getAllCustomers,
-  isBackgroundLoading,
-} from "../model/customer.js";
+import { getCountCustomers, getCustomers } from "../model/customer.js";
 import { initButtonsListener } from "./action-buttons-service.js";
-import {
-  getOffset,
-  initPaginationControls,
-  tamanhoPagina,
-} from "./pagination-controls-service.js";
+import { getOffset, initPaginationControls, tamanhoPagina } from "./pagination-controls-service.js";
 import { renderTableContainer, initSortListeners, initFilterListeners } from "../components/customer-table.js";
 import { openFilterModal } from "../components/column-filter-modal.js";
 import { exportToExcel } from "../util/export.js";
@@ -32,17 +21,6 @@ let filterState = {};
 
 export async function initTable() {
   totalRegistros = await getCountCustomers();
-  showToast(`Iniciando carregamento de ${totalRegistros} clientes...`);
-  await carregarLoteInicial();
-
-  iniciarBuscaBackground(
-    totalRegistros,
-    (atual, total) =>
-      updateToast(
-        `Carregando em segundo plano: ${atual} de ${total} clientes...`,
-      ),
-    () => updateToast("Todos os registros foram carregados com sucesso!", true),
-  );
 
   const offset = getOffset();
   loadedData = await getCustomers(offset, tamanhoPagina);
@@ -64,21 +42,6 @@ export function loadTable(newDay, totalRegistros) {
   selectCustomerListener();
   initSortListeners(handleSort);
   initFilterListeners(handleFilterClick);
-}
-
-export async function updateTable() {
-  const offset = getOffset();
-
-  const dados = await getCustomers(offset, tamanhoPagina, () => {
-    updateToast("Aguarde, finalizando o download desta página...");
-  });
-
-  loadedData = dados;
-  // Atualiza os dados originais quando mudar de página
-  originalPageData = [...dados];
-  sortState = { col: null, dir: null };
-
-  loadTable(days, totalRegistros);
 }
 
 function applyViewTransformations() {
@@ -166,43 +129,13 @@ function initCols() {
   cols = [
     { key: "NOMEPARC", label: "Nome", align: "left" },
     { key: "CODPARC", label: "Código", align: "center" },
-    {
-      key: `MAIORORC_${days}D`,
-      label: `Maior Orçamento ${days} Dias`,
-      fmt: fmtBRL,
-      align: "right",
-    },
-    {
-      key: `TOTALVENDAS_${days}D`,
-      label: `Total de Vendas ${days} Dias`,
-      fmt: fmtBRL,
-      align: "right",
-    },
-    {
-      key: `MAIORORC_${days}D`,
-      label: `Maior Orçamento ${days} Dias`,
-      fmt: fmtBRL,
-      align: "right",
-    },
-    {
-      key: `ORCACUM_${days}D`,
-      label: "Orçamento Acumulado",
-      fmt: fmtBRL,
-      align: "right",
-    },
-    {
-      key: "VLRORCPEN",
-      label: "Orçamento Pendente",
-      fmt: fmtBRL,
-      align: "right",
-    },
+    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `TOTALVENDAS_${days}D`, label: `Total de Vendas ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `MAIORORC_${days}D`, label: `Maior Orçamento ${days} Dias`, fmt: fmtBRL, align: "right", },
+    { key: `ORCACUM_${days}D`, label: "Orçamento Acumulado", fmt: fmtBRL, align: "right", },
+    { key: "VLRORCPEN", label: "Orçamento Pendente", fmt: fmtBRL, align: "right", },
     { key: "ULT_VENDA", label: "Última Venda", fmt: fmtDate, align: "center" },
-    {
-      key: "ULT_ORC",
-      label: "Último Orçamento",
-      fmt: fmtDate,
-      align: "center",
-    },
+    { key: "ULT_ORC", label: "Último Orçamento", fmt: fmtDate, align: "center", },
     { key: "TELEFONE", label: "Telefone", align: "left" },
     { key: "EMAIL", label: "E-mail", align: "left" },
     { key: "ULTVENDEDOR", label: "Último Vendedor", align: "left" },

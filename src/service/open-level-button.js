@@ -1,13 +1,24 @@
 import { renderOpenLevelButton } from "../components/level-button.js";
 
+let currentClickListener = null;
+
 export function initOpenLevelBtn(codparc) {
-    renderOpenLevelButton()
+    renderOpenLevelButton();
+
+    console.log("Ativo", codparc);
 
     const btnNivelContainer = document.querySelector(".btn-nivel-container");
 
-    btnNivelContainer.addEventListener("click", () => {
+    if (currentClickListener) {
+        btnNivelContainer.removeEventListener("click", currentClickListener);
+    }
+
+    currentClickListener = () => {
+        console.log("Btn Container", codparc);
         openSecondLevel(codparc);
-    })
+    };
+
+    btnNivelContainer.addEventListener("click", currentClickListener);
 }
 
 function openSecondLevel(codparc) {

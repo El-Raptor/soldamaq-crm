@@ -1,0 +1,42 @@
+[
+  {
+    "NUFIN": 15944385,
+    "DTVENC": "24/07/2026",
+    "DHBAIXA": "Pagamento Pendente",
+    "DIASATRASO": -131,
+    "DESCRTIPTIT": "BOLETO",
+    "NUMNOTA": 125651,
+    "NUNOTA": 9331754,
+    "APELIDO": "JEFERSON LIMA"
+  },
+  {
+    "NUFIN": 15755046,
+    "DTVENC": "03/07/2026",
+    "DHBAIXA": "Pagamento Pendente",
+    "DIASATRASO": -110,
+    "DESCRTIPTIT": "BOLETO",
+    "NUMNOTA": 124608,
+    "NUNOTA": 9227170,
+    "APELIDO": "JEFERSON LIMA"
+  },
+  {
+    "NUFIN": 15944384,
+    "DTVENC": "26/06/2026",
+    "DHBAIXA": "Pagamento Pendente",
+    "DIASATRASO": -103,
+    "DESCRTIPTIT": "BOLETO",
+    "NUMNOTA": 125651,
+    "NUNOTA": 9331754,
+    "APELIDO": "JEFERSON LIMA"
+  },
+  {
+    "NUFIN": 15755045,
+    "DTVENC": "05/06/2026",
+    "DHBAIXA": "Pagamento Pendente",
+    "DIASATRASO": -82,
+    "DESCRTIPTIT": "BOLETO",
+    "NUMNOTA": 124608,
+    "NUNOTA": 9227170,
+    "APELIDO": "JEFERSON LIMA"
+  }
+]

@@ -1,5 +1,4 @@
 import { renderPagination } from "../components/pagination-controls.js";
-import { updateTable } from "./customer-table-service.js";
 
 let paginaAtual = 1;
 let totalPaginas = null;
@@ -8,8 +7,6 @@ let ultimoItemPagina = null;
 let totalItensPagina = null;
 export const tamanhoPagina = 50;
 let offset = (paginaAtual - 1) * tamanhoPagina;
-
-let listenersIniciados = false;
 
 let pagination = {
     paginaAtual,
@@ -51,9 +48,6 @@ const irParaPagina = async (page) => {
 
     paginaAtual = page;
     offset = (page - 1) * tamanhoPagina;
-
-    // Dispara a atualização real dos dados e da tabela
-    await updateTable();
 }
 
 const firstPageListener = () => {
