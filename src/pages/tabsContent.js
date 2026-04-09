@@ -1,6 +1,7 @@
+import { criarTabela } from "../components/table.js";
+import { initTable } from "../service/table-service.js"; // NOVO IMPORT
 
-
-export function renderTabContent(dados, colunas, tabId) {
+export function renderTabContent(dados, configs, tabId) {
     const tabsContainer = document.querySelector(".tabs-container");
     let tabContent = document.querySelector(".tab-content");
     
@@ -10,46 +11,29 @@ export function renderTabContent(dados, colunas, tabId) {
     }
 
     tabContent.innerHTML = ""; 
-    
-    renderPane(dados, colunas, tabId);
+    renderPane(dados, configs, tabId);
 }
 
-function renderPane(dados, colunas, tabId) {
-    const tabContent = document.querySelector(".tab-content")
+function renderPane(dados, configs, tabId) {
+    const tabContent = document.querySelector(".tab-content");
     
+    const abaConfig = configs[tabId];
+    const abaDados = dados[tabId];
+
     const html = `
         <div id="tab-${tabId}" class="tab-pane active">
-            <div class="table-container">
-                ${renderTable(dados[tabId], colunas[tabId], tabId)}
+            <div class="table-container" id="container-${abaConfig.tableId || tabId}">
+                ${renderTable(abaDados, abaConfig)}
             </div>
         </div>
-    `
-    console.log(dados[tabId])
+    `;
 
-    tabContent.insertAdjacentHTML("beforeend", html)
+    tabContent.insertAdjacentHTML("beforeend", html);
+
+    // NOVO: Inicializa a lógica da tabela para esta aba específica
+    initTable(abaDados, abaConfig, null);
 }
 
-function renderTable(linhas, colunas) {
-    return `
-        <table class="tabela-secundaria">
-            <thead>
-                <tr>
-                ${colunas.map(col => `
-                    <th class="align-${col.align}">${col.label}</th>
-                `).join("")}
-                </tr>    
-            </thead>
-            <tbody>
-                ${linhas.map(row => `
-                    <tr>${colunas.map(col => `<td class="align-${col.align}">${renderCell(row, col)}</td>`)
-                .join("")}</tr>
-                `).join("")}  
-            </tbody>
-        </table>
-    `
-}
-
-function renderCell(row, col) {
-    const val = col.fmt ? col.fmt(row[col.key]) : row[col.key]
-    return val ?? "";
+function renderTable(dados, configs) {
+    return criarTabela(dados, configs);
 }

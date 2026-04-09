@@ -70,8 +70,19 @@ body {
    - Uso de variáveis para cores repetidas.
 ========================================================== */
 :root {
-  --primary-color: #66cc66;
-  --primary-color-dark: #59b359;
+  --surface: #ffffff;
+  --background: #f9fbfe;
+  --primary: #008560;
+  --label: #878787;
+  --border: #c4cbd8;
+  --border-lit: #cbd5e1;
+  --text: #2e3c50;
+  --muted: #64748b;
+  --accent: #008560;
+  --hover-primary: #24a883;
+  --primary-dark: #0d5e47;
+  --accent-dim: #ddf7dd;
+  --mono: "Roboto Mono", monospace;
   --primary-shadow: rgba(102, 204, 102, 0.3);
   --primary-shadow-hover: rgba(102, 204, 102, 0.4);
   --pill-padding: 12px 24px;
@@ -81,6 +92,7 @@ body {
 .table-filter-container {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 5px;
 }
 
 /* Botão do Nível */
@@ -95,6 +107,50 @@ body {
 .btn-nivel:hover {
   background-color: #59B359;
   cursor: pointer;
+}
+
+.pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    transition: all .2s ease-in-out;
+}
+
+/* Vermelho para pendente e em atraso */
+.pill-danger {
+    background-color: #dc2626;
+    color: white;
+}
+
+/* Amarelo/Laranja para vencimento próximo */
+.pill-warning {
+    background-color: #d97706;
+    color: white;
+}
+
+/* Verde para pagamentos em dia ou antecipados */
+.pill-success {
+    background-color: #16a34a;
+    color: white;
+}
+
+.pill-danger:hover {
+    background-color: #b31919;
+    transform: translateY(-2px);
+}
+
+.pill-warning:hover {
+    background-color: #ce6809;
+    transform: translateY(-2px);
+}
+
+.pill-success:hover {
+    background-color: #098135;
+    transform: translateY(-2px);
 }
 
 /* ==========================================================

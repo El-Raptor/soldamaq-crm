@@ -16,8 +16,8 @@
 .card {
   background: linear-gradient(
     135deg,
-    var(--primary-color),
-    var(--primary-color-dark)
+    var(--primary),
+    var(--primary-dark)
   );
   padding: 20px;
   color: white;

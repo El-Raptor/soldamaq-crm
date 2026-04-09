@@ -30,19 +30,66 @@ export async function getCustomers() {
     return results
   }
 
-  // Paginação padrão para Oracle 11 usando ROWNUM
-  // Dica: Ajuste o "ORDER BY CODPARC" para a coluna que faz sentido no seu CRM
-  const query = `
-      SELECT *
-      FROM VGFCRM_SKMS
-      ORDER BY CODPARC
-  `;
+  const campos = "NOMEPARC,  CODPARC, MAIORORC_30D, MAIORORC_60D, MAIORORC_90D, TOTALVENDAS_30D, TOTALVENDAS_60D, TOTALVENDAS_90D, ORCACUM_30D, ORCACUM_60D, ORCACUM_90D, VLRORCPEN, ULT_VENDA, ULT_ORC, TELEFONE, EMAIL, ULTVENDEDOR"
+   
+
+  const results = await JSK.consultarView("VGFCRM_SKMS", campos, null);
+
+  if (!results || results.status == 0) {
+    console.error("Erro ao obter clientes", results.statusMessage)
+    throw new Error("Erro ao carregar o lote inicial.", results.statusMessage);
+  }
+
+  const rawRecords = results.responseBody.records.record
+
+  const registrosLimpos = flatResults(rawRecords);
+
+  return registrosLimpos;
+}
+
+export async function getInactiveCustomers() {
+  if (isDev) {
+    return []
+  }
+
+  const campos = "NOMEPARC,  CODPARC, MAIORORC, TOTALVENDAS, ORCACUM, VLRORCPEN, ULT_VENDA, ULT_ORC, TELEFONE, EMAIL, ULTVENDEDOR"
   
-  const results = await JSK.consultarDB(query, null);
+  const results = await JSK.consultarView("VGFCRM_SC_SKMS", campos, null);
 
   if (!results || results.status == 0) {
     throw new Error("Erro ao carregar o lote inicial.", results.statusMessage);
   }
 
-  return results.resultado;
+  const rawRecords = results.responseBody.records.record;
+
+  const registrosLimpos = flatResults(rawRecords);
+
+  return registrosLimpos;
+}
+
+function flatResults(rawRecords) {
+  const registrosLimpos = rawRecords.map(row => {
+    const flatRow = {};
+    
+    for (const key in row) {
+        let val = row[key];
+        
+        // Se o valor for um objeto (e não for nulo), precisamos "desempacotar"
+        if (typeof val === 'object' && val !== null) {
+            // Se for um objeto vazio {}, significa que a tag XML veio vazia (campo sem valor)
+            if (Object.keys(val).length === 0) {
+                val = null;
+            } else {
+                // Tenta buscar as chaves padrão de parsers XML-to-JSON ('$', '_', 'value')
+                // Se não achar nenhuma dessas, pega a primeira propriedade que existir lá dentro
+                val = val.$ || val._ || val.value || Object.values(val)[0]; 
+            }
+        }
+        
+        flatRow[key] = val;
+    }
+    
+    return flatRow;
+  });
+  return registrosLimpos;
 }

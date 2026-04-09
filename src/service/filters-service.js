@@ -1,45 +1,50 @@
-import { renderDataFilter, renderPillsContainer } from "../components/filter-btns.js";
-import { loadTable as reloadTable } from "./customer-table-service.js";
+import { setActiveCodparc, atualizarTabelaPorTempo, atualizarTabelaPorCategoria } from "../main.js";
 
 let activeFilter = "maiores-clientes";
 let days = "60";
 
 
 export function initFilters() {
-    renderDataFilter();
-    renderPillsContainer();
-
     dataFilterListener()
     timeFilterListener()
 }
 
 const dataFilterListener = () => {
-    const pillButtons = document.querySelectorAll(".pill-button")
-    pillButtons.forEach(pillButton => {
-        pillButton.addEventListener("click", () => {
-            const pills = document.querySelectorAll(".pill-button");
-            pills.forEach(p => p.classList.remove("active"));
+    const filterContainer = document.querySelector(".filter-container");
 
-            pillButton.classList.toggle("active")
+    filterContainer.addEventListener("click", (event) => {
+        const dataFilter = event.target.closest(".data-filter");
 
-            activeFilter = pillButton.id;
-            // setActiveCodpar(null) -- Remove Codparc selecionado - antes de fazer isso, tratar valor null pro codparc
-        })
-    })
+        if (!dataFilter) return;
+
+        const pills = document.querySelectorAll(".data-filter");
+        pills.forEach(p => p.classList.remove("active"));
+
+        dataFilter.classList.add("active"); // Usa "add" para garantir em vez de "toggle"
+
+        activeFilter = dataFilter.id;
+        
+        // Faz a requisição e troca a tabela inteira
+        atualizarTabelaPorCategoria(activeFilter);
+        setActiveCodparc(null)
+    });
 }
 
 const timeFilterListener = () => {
-    const pillButtons = document.querySelectorAll(".time-pill-button")
-    pillButtons.forEach(pillButton => {
-        pillButton.addEventListener("click", () => {
-            const pills = document.querySelectorAll(".time-pill-button");
-            pills.forEach(p => p.classList.remove("active"));
+    const timeFilterContainer = document.querySelector(".time-filter-container");
 
-            pillButton.classList.toggle("active")
+    
+    timeFilterContainer.addEventListener("click", event => {
+        const timeFilter = event.target.closest(".time-filter");
+        
+        if (!timeFilter) return;
 
-            days = pillButton.id;
-            reloadTable(days);
-            // TODO: remover seleção de clientes
-        })
-    })
+        const pills = document.querySelectorAll(".time-filter");
+        pills.forEach(p => p.classList.remove("active"));
+
+        timeFilter.classList.toggle("active");
+
+        days = timeFilter.id;
+        atualizarTabelaPorTempo(days);
+    });
 }

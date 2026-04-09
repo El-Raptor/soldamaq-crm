@@ -1,0 +1,380 @@
+.table-container {
+    background: var(--surface);
+    border-radius: 10px;
+    box-shadow: 3px 4px 7.6px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    min-width: 1350px;
+}
+
+.table-scroll-wrap {
+  overflow-x: auto;
+  padding: 0 20px 18px;
+  max-height: 645px;
+}
+
+#container-tabela-clientes .table-scroll-wrap {
+  max-height: 345px;
+}
+
+.table-scroll-wrap::-webkit-scrollbar {
+  height: 5px;
+}
+.table-scroll-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+.table-scroll-wrap::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+.table-scroll-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.info-header {
+  display: flex;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Alinha tudo à direita */
+    gap: 8px;
+}
+
+.btn-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.btn-page:hover:not(:disabled) {
+    background: var(--accent-dim);
+    color: var(--primary-dark);
+    border-color: var(--primary);
+}
+
+.btn-page:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f1f5f9;
+}
+
+.pagination-info {
+    font-size: 13px;
+    color: var(--text);
+    font-family: var(--mono);
+    margin-right: 8px; /* Dá um espacinho entre o texto e as setinhas */
+}
+
+.records-count {
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+.header-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-refresh,
+.btn-export {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px 9px;
+  border-radius: 25px;
+  transition:
+    color 0.1s,
+    background 0.1s;
+  font-size: 15px;
+}
+
+.btn-refresh:hover,
+.btn-export:hover {
+  color: #007a5a;
+  background: var(--accent-dim);
+}
+
+.tabela-conferencia {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 3px;
+  font-size: 13px;
+  white-space: nowrap;
+  max-height: 545px;
+}
+
+.tabela-conferencia thead th {
+  padding: 6px 12px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--label);
+  font-family: var(--mono);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* ── Alinhamento de células e cabeçalhos ── */
+.tabela-conferencia .align-left {
+  text-align: left;
+}
+.tabela-conferencia  .align-center {
+  text-align: center;
+}
+.tabela-conferencia .align-right {
+  text-align: right;
+}
+
+.tabela-conferencia tbody tr {
+  transition: background 0.12s;
+}
+.tabela-conferencia tbody tr:hover td {
+  background: var(--accent-dim);
+  cursor: pointer;
+}
+
+.tabela-conferencia tbody td {
+  padding: 7px 12px;
+  color: var(--text);
+  background: #f9fbfe;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+/* Primeira e última célula arredondadas */
+.tabela-conferencia tbody td:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.tabela-conferencia tbody td:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+/* Linhas pagas levemente esverdeadas */
+.tabela-conferencia tbody tr.row--paid td {
+  background: #edfaed;
+}
+
+.tabela-conferencia tbody tr .row-action-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+    padding: 6px 12px;
+    font-size: 11px;
+}
+
+.tabela-conferencia tbody tr:hover .row-action-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.subtotal-row td {
+  background: #dff5df !important;
+  border-top: 1px solid var(--border) !important;
+  padding: 8px 12px;
+}
+
+.linha-principal {
+    cursor: pointer; /* Indica que é clicável */
+    transition: background-color 0.2s;
+}
+
+.linha-principal:hover {
+    background-color: #f0f8ff; /* Um azulzinho claro no hover */
+}
+
+.linha-principal.is-expanded {
+    background-color: #e6f7ff; /* Cor de fundo fixa quando aberta */
+    font-weight: bold;
+}
+
+/* Feedback visual de carregamento (opcional) */
+.linha-principal.is-loading {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+/* Estilos para a nova linha de detalhe */
+.linha-detalhe {
+    background-color: #fdfdfd; /* Fundo ligeiramente diferente */
+    animation: slideDown 0.3s ease-out; /* Animação suave ao abrir */
+}
+
+/* Remove o padding padrão da TD do detalhe para controlar dentro da div */
+.linha-detalhe > td {
+    padding: 0; 
+    border-top: none; /* Evita borda dupla */
+}
+
+/* -- Rodapé -- */
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px;
+  gap: 12px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.summary-container {
+  display: flex;
+  gap: 7px;
+}
+
+.icon-container {
+  display: flex;
+  padding: 8px 9px;
+  font-size: 20px;
+  border-radius: 25px;
+}
+
+.icon-container--emb {
+  background-color: #e6f7ff; 
+  color: #0050b3; 
+}
+
+.icon-container--rev {
+  background-color: var(--accent-dim); 
+  color: var(--primary-dark);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 11px;
+  font-family: "Roboto";
+  color: var(--text);
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+/* ── Cabeçalho filtrável ── */
+.th-filterable {
+  position: relative;
+}
+
+.th-label {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Botão de funil: escondido por padrão, aparece no hover */
+.col-filter-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: none;
+  border-left: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transform: translateX(2px);
+  transition:
+    opacity 0.15s,
+    color 0.15s,
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+  border-radius: 0 0 0 0;
+  font-size: 11px;
+  z-index: 2;
+}
+
+/* Filtro ativo: sempre visível com destaque */
+.col-filter-btn--active {
+  opacity: 1 !important;
+  color: #007a5a !important;
+  background-color: #e6faf3 !important;
+  border-left-color: var(--border) !important;
+  transform: translateX(0) !important;
+}
+
+.th-filterable:hover .col-filter-btn {
+  opacity: 1;
+  transform: translateX(0);
+  border-left-color: var(--border);
+}
+
+.col-filter-btn:hover {
+  color: #007a5a;
+  background-color: #e6faf3;
+}
+
+/* ── Linha "sem resultados" dentro da tabela filtrada ── */
+.no-filtered-results {
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--mono);
+}
+
+.no-filtered-results i {
+  margin-right: 8px;
+  color: var(--border);
+}
+
+.sortable-th {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Efeito ao passar o mouse por cima de qualquer lugar do cabeçalho */
+.sortable-th:hover {
+  background-color: var(--accent-dim) !important;
+}
+
+/* Destaca o texto e o ícone de ordenação no hover */
+.sortable-th:hover .th-label,
+.sortable-th:hover .sort-icon {
+  color: #007a5a;
+}
+
+/* Deixa o ícone de ordenação mais visível ao passar o mouse */
+.sortable-th:hover .sort-icon {
+  opacity: 0.7 !important;
+}
+
+/* Se a coluna estiver ativamente sendo ordenada */
+.sortable-th[data-col]:has(.sort-icon[style*="opacity: 1"]) {
+  background-color: #F3FCFB; /* Fundo sutil para a coluna ativa */
+}
+
+.sortable-th[data-col]:has(.sort-icon[style*="opacity: 1"]) .th-label,
+.sortable-th[data-col]:has(.sort-icon[style*="opacity: 1"]) .sort-icon {
+  color: #007a5a;
+  font-weight: bold;
+}

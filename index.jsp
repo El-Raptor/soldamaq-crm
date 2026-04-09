@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/styles.css">
     <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/cards.css">
-    <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/customer-table.css">
-    <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/pagination.css">
+    <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/table.css">
     <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/pills.css">
     <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/panes.css">
     <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/loading-styles.css">
+    <link rel="stylesheet" type="text/css" href="${BASE_FOLDER}/src/css/filter-modal.css">
     <snk:load />
 </head>
 
@@ -32,8 +32,11 @@
         </section>
     </main>
 
+    <script>
+        window.APP_BASE_FOLDER = "${BASE_FOLDER}";
+    </script>
     <script type="module" src="${BASE_FOLDER}/src/main.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </body>
 
 </html>

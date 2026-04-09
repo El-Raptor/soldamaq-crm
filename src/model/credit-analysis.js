@@ -1,44 +1,42 @@
+import { ServicoDados as JSK } from "../service/ServicoDados.js";
+import { isDev } from "../util/env.js";
+import { fetchMock } from "../util/mock-fetcher.js";
+
 export async function getCreditAnalysis(codparc) {
-    return [
-  {
-    "NUFIN": 15944385,
-    "DTVENC": "24/07/2026",
-    "DHBAIXA": "Pagamento Pendente",
-    "DIASATRASO": -131,
-    "DESCRTIPTIT": "BOLETO",
-    "NUMNOTA": 125651,
-    "NUNOTA": 9331754,
-    "APELIDO": "JEFERSON LIMA"
-  },
-  {
-    "NUFIN": 15755046,
-    "DTVENC": "03/07/2026",
-    "DHBAIXA": "Pagamento Pendente",
-    "DIASATRASO": -110,
-    "DESCRTIPTIT": "BOLETO",
-    "NUMNOTA": 124608,
-    "NUNOTA": 9227170,
-    "APELIDO": "JEFERSON LIMA"
-  },
-  {
-    "NUFIN": 15944384,
-    "DTVENC": "26/06/2026",
-    "DHBAIXA": "Pagamento Pendente",
-    "DIASATRASO": -103,
-    "DESCRTIPTIT": "BOLETO",
-    "NUMNOTA": 125651,
-    "NUNOTA": 9331754,
-    "APELIDO": "JEFERSON LIMA"
-  },
-  {
-    "NUFIN": 15755045,
-    "DTVENC": "05/06/2026",
-    "DHBAIXA": "Pagamento Pendente",
-    "DIASATRASO": -82,
-    "DESCRTIPTIT": "BOLETO",
-    "NUMNOTA": 124608,
-    "NUNOTA": 9227170,
-    "APELIDO": "JEFERSON LIMA"
-  }
-]
+    if (isDev) {
+      return await fetchMock("credit_analysis.json");
+    }
+
+    const query = `
+      SELECT
+            FIN.NUFIN
+          , FIN.DTVENC
+          , FIN.DHBAIXA
+          , COALESCE(TRUNC(DHBAIXA), TRUNC(SYSDATE)) - FIN.DTVENC AS DIASATRASO
+          , TIT.DESCRTIPTIT
+          , FIN.NUMNOTA
+          , FIN.NUNOTA
+          , VEN.APELIDO
+      FROM 
+          TGFFIN FIN
+          JOIN TGFTIT TIT ON FIN.CODTIPTIT = TIT.CODTIPTIT
+          JOIN TGFVEN VEN ON FIN.CODVEND = VEN.CODVEND
+      WHERE
+            FIN.PROVISAO = 'N'
+        AND FIN.CODPARC = ?
+    ORDER BY
+        FIN.DTVENC DESC
+    `;
+
+    const params = [{ value: codparc, type: "I" }]
+
+    const results = await JSK.consultar(query, params);
+
+    if (results.status == 0) {
+      console.error("Erro ao obter análise de crédito:", results.statusMessage);
+      throw new Error("Erro ao obter análise de crédito:", results.statusMessage);
+    }
+
+    return results;
+
 }

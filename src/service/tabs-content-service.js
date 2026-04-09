@@ -1,13 +1,13 @@
 import { renderEmptyTabContainer, renderTabsContainer, renderFinalConsumerState } from "../components/tabs-container.js";
 import { renderTabContent } from "../pages/tabsContent.js";
-import { fmtBRL, fmtDate } from "../util/data-format-utils.js";
+import { fmtBRL, fmtDate, fmtDhBaixa, fmtDiasAtraso } from "../util/data-format-utils.js";
 
-let cols = []
+let configs = []
 
 export function initTabsListener(codparc, dados) {
     renderTabsContainer();
     if (codparc && codparc != 1) {
-        initCols()
+        initConfigs()
         const tabs = document.querySelectorAll(".tabs-header .pill-button");
         tabs.forEach(tab => {
             tab.addEventListener("click", (e) => {
@@ -15,13 +15,13 @@ export function initTabsListener(codparc, dados) {
                 pills.forEach(pill => pill.classList.remove("active"));
                 
                 tab.classList.add("active"); 
-                changeTab(dados, cols, tab.id);
+                changeTab(dados, configs, tab.id);
                 e.stopPropagation();
             });
         });
     
         // Renderiza a aba de histórico por padrão ao carregar a seção
-        changeTab(dados, cols, "historico");
+        changeTab(dados, configs, "historico");
         return
     }
 
@@ -49,39 +49,58 @@ function changeTab(dados, cols, tabId) {
     renderTabContent(dados, cols, tab.id)
 }
 
-function initCols() {
-    const historico = [
-        { key: "DESCRGRUPOPROD", label: "Grupo", align: "left" },
-        { key: "DESCRPROD", label: "Produto", align: "left" },
-        { key: "CODPROD", label: "Código", align: "left" },
-        { key: "MARCA", label: "Marca", align: "left" },
-        { key: "ULTVLR", label: "Últ. Preço", fmt: fmtBRL, align: "right" },
-        { key: "ULTQTD", label: "Últ. Qtd.", fmt: fmtBRL, align: "right" },
-        { key: "ULTVEND", label: "Últ. Venda", fmt: fmtDate, align: "center" },
-        { key: "ULTVENDEDOR", label: "Últ. Vendedor", align: "center" },
-        { key: "RAZAOSOCIAL", label: "Empresa", fmt: fmtBRL, align: "left" },
-        { key: "ULTPED", label: "Últ. Pedido", fmt: fmtDate, align: "center" },
-    ];
-    const credito = [
-        { key: "NUFIN", label: "Nº Financeiro", align: "center" },
-        { key: "DTVENC", label: "Vencimento", align: "center" },
-        { key: "DHBAIXA", label: "Data Pagamento", align: "center" },
-        { key: "DIASTRASO", label: "Dias Atraso", align: "center" },
-        { key: "DESCRTIPTIT", label: "Tipo Título", align: "left" },
-        { key: "NUMNOTA", label: "Nº Nota", align: "center" },
-        { key: "NUNOTA", label: "Nº Único", align: "center" },
-        { key: "APELIDO", label: "Vendedor", align: "left" },
-    ];
-    const contatos = [
-        { key: "NOME", label: "Nome", align: "left" },
-        { key: "TIPO", label: "Tipo", align: "left" },
-        { key: "TELEFONE", label: "Telefone", align: "left" },
-        { key: "CELULAR", label: "Celular", align: "left" },
-        { key: "EMAIL", label: "E-mail", align: "left" },
-        { key: "ULTCHAMADA", label: "Último Contato", align: "center" },
-    ]
-    const produtos = [
-        { key: "CODPROD", label: "Código", align: "center" },
-    ]
-    cols = { historico, credito, contatos, produtos };
+function initConfigs() {
+    const historico = {
+        tableId: 'tabela-historico',
+        cols: COLS_HISTORICO,
+    }
+    const credito = {
+        tableId: 'tabela-credito',
+        cols: COLS_CREDITO,
+    }
+    const contatos = {
+        tableId: 'tabela-contatos',
+        cols: COLS_CONTATOS,
+    }
+    const produtos = {
+        tableId: 'tabela-produtos',
+        cols: COLS_PRODUTOS,
+    }
+    configs = { historico, credito, contatos, produtos };
 }
+
+const COLS_HISTORICO = [
+    { key: "DESCRGRUPOPROD", name: "Grupo", align: "left" },
+    { key: "DESCRPROD", name: "Produto", align: "left" },
+    { key: "CODPROD", name: "Código", align: "left" },
+    { key: "MARCA", name: "Marca", align: "left" },
+    { key: "ULTVLR", name: "Últ. Preço", fmt: fmtBRL, align: "right" },
+    { key: "ULTQTD", name: "Últ. Qtd.", fmt: fmtBRL, align: "right" },
+    { key: "ULTVEND", name: "Últ. Venda", fmt: fmtDate, align: "center" },
+    { key: "ULTVENDEDOR", name: "Últ. Vendedor", align: "center" },
+    { key: "RAZAOSOCIAL", name: "Empresa", fmt: fmtBRL, align: "left" },
+    { key: "ULTPED", name: "Últ. Pedido", fmt: fmtDate, align: "center" },
+];
+const COLS_CREDITO = [
+    { key: "NUFIN", name: "Nº Financeiro", align: "center" },
+    { key: "DTVENC", name: "Vencimento", fmt: fmtDate, align: "center" },
+    { key: "DHBAIXA", name: "Data Pagamento", fmt: fmtDhBaixa, align: "center" },
+    { key: "DIASATRASO", name: "Dias Atraso", fmt: fmtDiasAtraso, align: "center" },
+    { key: "DESCRTIPTIT", name: "Tipo Título", align: "left" },
+    { key: "NUMNOTA", name: "Nº Nota", align: "center" },
+    { key: "NUNOTA", name: "Nº Único", align: "center" },
+    { key: "APELIDO", name: "Vendedor", align: "left" },
+];
+
+const COLS_CONTATOS = [
+    { key: "NOME", name: "Nome", align: "left" },
+    { key: "TIPO", name: "Tipo", align: "left" },
+    { key: "TELEFONE", name: "Telefone", align: "left" },
+    { key: "CELULAR", name: "Celular", align: "left" },
+    { key: "EMAIL", name: "E-mail", align: "left" },
+    { key: "ULTCHAMADA", name: "Último Contato", fmt: fmtDate, align: "center" },
+];
+
+const COLS_PRODUTOS = [
+    { key: "CODPROD", name: "Código", align: "center" },
+]
